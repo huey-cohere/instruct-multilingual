@@ -1,0 +1,62 @@
+RecapCauldronCocoqa:
+  path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronCocoqa/2024_04_19/train.jsonl
+  downsample_num: 20000
+
+# RecapCauldronSpot_the_diff:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronSpot_the_diff/2024_04_19/train.jsonl
+  
+# RecapCauldronLocalized_narratives:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronLocalized_narratives/2024_06_16/train.jsonl
+#   downsample_num: 20000
+
+# RecapCauldronSt_vqa:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronSt_vqa/2024_04_19/train.jsonl
+
+# RecapCauldronTextcaps:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronTextcaps/2024_04_19/train.jsonl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# RecapCauldronCocoqa:
+#   train:
+#     path: gs://cohere-command/data/generated_jsonl_data/RecapCauldronCocoqa/2024_04_19/train.jsonl
+#     downsample_num: 20000
+
+# RecapCauldronSpot_the_diff:
+#   train:
+#     path: gs://cohere-command/data/generated_jsonl_data/RecapCauldronSpot_the_diff/2024_04_19/train.jsonl
+  
+
+# RecapCauldronLocalized_narratives:
+#   train:
+#     path: gs://cohere-command/data/generated_jsonl_data/RecapCauldronLocalized_narratives/2024_06_16/train.jsonl
+#     downsample_num: 20000
+
+# RecapCauldronSt_vqa:
+#   train:
+#     path: gs://cohere-command/data/generated_jsonl_data/RecapCauldronSt_vqa/2024_04_19/train.jsonl
+
+# RecapCauldronTextcaps:
+#   train:
+#     path: gs://cohere-command/data/generated_jsonl_data/RecapCauldronTextcaps/2024_04_19/train.jsonl
+
+
+
+
