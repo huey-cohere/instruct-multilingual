@@ -1,19 +1,19 @@
-RecapCauldronCocoqa:
-  path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronCocoqa/2024_04_19/train.jsonl
-  downsample_num: 20000
-
-# RecapCauldronSpot_the_diff:
-#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronSpot_the_diff/2024_04_19/train.jsonl
-  
-# RecapCauldronLocalized_narratives:
-#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronLocalized_narratives/2024_06_16/train.jsonl
+# RecapCauldronCocoqa:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw_reformat/RecapCauldronCocoqa/train.jsonl
 #   downsample_num: 20000
 
-# RecapCauldronSt_vqa:
-#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronSt_vqa/2024_04_19/train.jsonl
+RecapCauldronSpot_the_diff:
+  path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw_reformat/RecapCauldronSpot_the_diff/train.jsonl
+  
+# RecapCauldronLocalized_narratives:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw_reformat/RecapCauldronLocalized_narratives/train.jsonl
+#   downsample_num: 20000
 
-# RecapCauldronTextcaps:
-#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw/CauldronTextcaps/2024_04_19/train.jsonl
+RecapCauldronSt_vqa:
+  path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw_reformat/RecapCauldronSt_vqa/train.jsonl
+
+RecapCauldronTextcaps:
+  path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_raw_reformat/RecapCauldronTextcaps/train.jsonl
 
 
 

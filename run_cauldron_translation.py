@@ -7,30 +7,30 @@
 # )
 
 aya23_code2lang ={
-    # "arb_Arab": "Modern Standard Arabic",
+    "arb_Arab": "Modern Standard Arabic",
     "zho_Hans": "Chinese (Simplified)",
-    # "zho_Hant": "Chinese (Traditional)",
-    # "ces_Latn": "Czech",
-    # "nld_Latn": "Dutch",
-    # "eng_Latn": "English",
-    # "fra_Latn": "French",
-    # "deu_Latn": "German",
-    # "ell_Grek": "Greek",
-    # "heb_Hebr": "Hebrew",
-    # "hin_Deva": "Hindi",
-    # "ind_Latn": "Indonesian",
-    # "ita_Latn": "Italian",
-    # "jpn_Jpan": "Japanese",
-    # "kor_Hang": "Korean",
-    # "pes_Arab": "Western Persian",
-    # "pol_Latn": "Polish",
-    # "por_Latn": "Portuguese",
-    # "ron_Latn": "Romanian",
-    # "rus_Cyrl": "Russian",
-    # "spa_Latn": "Spanish",
-    # "tur_Latn": "Turkish",
-    # "ukr_Cyrl": "Ukrainian",
-    # "vie_Latn": "Vietnamese",
+    "zho_Hant": "Chinese (Traditional)",
+    "ces_Latn": "Czech",
+    "nld_Latn": "Dutch",
+    "eng_Latn": "English",
+    "fra_Latn": "French",
+    "deu_Latn": "German",
+    "ell_Grek": "Greek",
+    "heb_Hebr": "Hebrew",
+    "hin_Deva": "Hindi",
+    "ind_Latn": "Indonesian",
+    "ita_Latn": "Italian",
+    "jpn_Jpan": "Japanese",
+    "kor_Hang": "Korean",
+    "pes_Arab": "Western Persian",
+    "pol_Latn": "Polish",
+    "por_Latn": "Portuguese",
+    "ron_Latn": "Romanian",
+    "rus_Cyrl": "Russian",
+    "spa_Latn": "Spanish",
+    "tur_Latn": "Turkish",
+    "ukr_Cyrl": "Ukrainian",
+    "vie_Latn": "Vietnamese",
 }
 
 
@@ -50,7 +50,7 @@ CAULDRON_RECAPTION_SOURCE = (
     "/home/olivernan_cohere_com/instruct-multilingual/cauldron_recaption_source.yaml"
 )
 
-DATA_DIR = "/home/olivernan_cohere_com/recap_cauldron_translation_2024_10_14_raw"
+DATA_DIR = "/home/olivernan_cohere_com/recap_cauldron_translation_2024_10_15_raw"
 
 SERVER_PORT_LIST = [f"http://localhost:{8000 + i}/translate" for i in range(64)]
 
@@ -197,7 +197,7 @@ def main():
                 
                 shutil.rmtree(f"{DATA_DIR}/{dataset_name}_translation/{code}/splits/")
 
-        # shutil.rmtree(f"{DATA_DIR}/{dataset_name}_translation/raw_data/")
+        shutil.rmtree(f"{DATA_DIR}/{dataset_name}_translation/raw_data/")
         # os.rename(f"{DATA_DIR}/{dataset_name}_translation/raw_data/", f"{DATA_DIR}/{dataset_name}_translation/eng_Latn/")
         # shutil.move(f"{DATA_DIR}/{dataset_name}/eng_Latn/", f"{DATA_DIR}/{dataset_name}/translation/")
 
