@@ -95,25 +95,25 @@ def main():
         os.makedirs(f"{DATA_DIR}/{dataset_name}_translation/eng_Latn", exist_ok=True)
         with open(f"{DATA_DIR}/{dataset_name}_translation/eng_Latn/train.jsonl", "w+") as f:
             for i, line in enumerate(dataset):
-                example = {"User":[], "Chatbot":[], "Image":[] }
-                for turn in line["turns"]:
-                    if turn["role"] == "User":
-                        for content in turn['content']:
-                            if "text" in content:
-                                example['User'].append({"text": content["text"], "language": "eng_Latn", "source": "raw"})
-                            if "url" in content:
-                                example['Image'].append(content["url"])
-                    if turn["role"] == "Chatbot":
-                        example['Chatbot'].append({'text': turn["content"], "language": "eng_Latn", "source": "raw"})
-                    if turn["role"] == "Chatbot-gpt":
-                        example['Chatbot'].append({"text": turn["content"], "language": "eng_Latn", "source": "raw-gpt_recap"})
+                # example = {"User":[], "Chatbot":[], "Image":[] }
+                # for turn in line["turns"]:
+                #     if turn["role"] == "User":
+                #         for content in turn['content']:
+                #             if "text" in content:
+                #                 example['User'].append({"text": content["text"], "language": "eng_Latn", "source": "raw"})
+                #             if "url" in content:
+                #                 example['Image'].append(content["url"])
+                #     if turn["role"] == "Chatbot":
+                #         example['Chatbot'].append({'text': turn["content"], "language": "eng_Latn", "source": "raw"})
+                #     if turn["role"] == "Chatbot-gpt":
+                #         example['Chatbot'].append({"text": turn["content"], "language": "eng_Latn", "source": "raw-gpt_recap"})
                 
-                dataset[i] = example
-                f.write(json.dumps(example) + "\n")
+                # dataset[i] = example
+                # f.write(json.dumps(example) + "\n")
 
-                # f.write(json.dumps(line) + "\n")                
+                f.write(json.dumps(line) + "\n")                
         
-        print(dataset[0])
+        # print(dataset[0])
         print(f"Dataset size: {len(dataset)}")
 
         num_per_server = math.ceil(len(dataset) / len(SERVER_PORT_LIST))
