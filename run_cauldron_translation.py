@@ -118,12 +118,12 @@ def main():
 
         num_per_server = math.ceil(len(dataset) / len(SERVER_PORT_LIST))
 
-        dataset_list = [
+        dataset_chunk = [
             dataset[i : i + num_per_server] for i in range(0, len(dataset), num_per_server)
         ]
 
         dataset_paths = []
-        for i, chunk in enumerate(dataset_list):
+        for i, chunk in enumerate(dataset_chunk):
             os.makedirs(f"{DATA_DIR}/{dataset_name}_translation/raw_data/splits", exist_ok=True)
             _path = f"{DATA_DIR}/{dataset_name}_translation/raw_data/splits/split_{i}.jsonl"
             dataset_paths.append(_path)
@@ -131,7 +131,7 @@ def main():
                 for line in chunk:
                     f.write(json.dumps(line) + "\n")
 
-        del dataset_list
+        del dataset_chunk
         del dataset
         
         os.makedirs(f"{DATA_DIR}/{dataset_name}_translation", exist_ok=True)
