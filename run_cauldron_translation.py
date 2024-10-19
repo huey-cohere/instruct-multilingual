@@ -138,6 +138,7 @@ def main():
                 dataset[i : i + num_per_server] for i in range(0, len(dataset), num_per_server)
             ]
             path_list = []
+            os.makedirs(f"{DATA_DIR}/{dataset_name}_translation/raw_data/splits", exist_ok=True)
             for i, chunk in enumerate(dataset_chunk):
                 _path = f"{DATA_DIR}/{dataset_name}_translation/raw_data/splits/split_{i}.jsonl"
                 path_list.append(_path)
