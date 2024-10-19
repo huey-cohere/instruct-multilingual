@@ -279,7 +279,7 @@ if __name__ == "__main__":
     parser.add_argument("--url", type=str, default="http://localhost:8000/translate", help="URL of the inference API server")
     parser.add_argument("--output_dir", type=str, default="./datasets", help="Output directory for the translated dataset")
     args = parser.parse_args()
-
+    print(args)
     translate_dataset(
         dataset_path=args.dataset_path,
         target_language_code=args.target_language_code,
