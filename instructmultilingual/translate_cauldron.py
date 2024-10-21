@@ -109,6 +109,7 @@ def translate_sent_by_sent(
     """
     data_dict, url, source_language_code, target_language_code = inputs
     example = {}
+
     # for turn in data["turns"]:
     #     if turn["role"] == "User":
     #         for content in turn['content']:
@@ -118,12 +119,14 @@ def translate_sent_by_sent(
     #         example['answer'] = turn["content"]
 
     for data in data_dict["User"]:
-        if data['language'] == source_language_code and data['source'] == "raw":
+        if data['language'] == source_language_code and data['source'] == "raw-processed":
             example["User"] = data["text"]
+            break
     
     for data in data_dict["Chatbot"]:
         if data['language'] == source_language_code and data['source'] == "raw-gpt_recap":
             example["Chatbot"] = data["text"]
+            break
 
     if example == {}:
         raise ValueError("No data found for translation")
@@ -167,7 +170,7 @@ def translate_sent_by_sent(
     #     if data["turns"][i]["role"] == "Chatbot":
     #         data["turns"][i]["content"] = example["answer"]
 
-    data_dict["User"].append({"text": example["User"], "language": target_language_code, "source": "raw-nllb_translated"})
+    data_dict["User"].append({"text": example["User"], "language": target_language_code, "source": "raw-processed-nllb_translated"})
     data_dict["Chatbot"].append({"text": example["Chatbot"], "language": target_language_code, "source": "raw-gpt_recap-nllb_translated"})
 
     return data_dict

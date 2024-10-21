@@ -50,7 +50,7 @@ CAULDRON_RECAPTION_SOURCE = (
     "/home/olivernan_cohere_com/instruct-multilingual/cauldron_recaption_source.yaml"
 )
 
-DATA_DIR = "/home/olivernan_cohere_com/recap_cauldron_translation_2024_10_15_raw"
+DATA_DIR = "/home/olivernan_cohere_com/recap_cauldron_translation_2024_10_20_raw"
 
 SERVER_PORT_LIST = [f"http://localhost:{8000 + i}/translate" for i in range(64)]
 
@@ -138,6 +138,7 @@ def main():
                 dataset[i : i + num_per_server] for i in range(0, len(dataset), num_per_server)
             ]
             path_list = []
+            os.makedirs(f"{DATA_DIR}/{dataset_name}_translation/raw_data/splits", exist_ok=True)
             for i, chunk in enumerate(dataset_chunk):
                 _path = f"{DATA_DIR}/{dataset_name}_translation/raw_data/splits/split_{i}.jsonl"
                 path_list.append(_path)

@@ -32,15 +32,15 @@ def make_request(params):
     data_dict, engine, target_language_code, max_tokens, temperature, top_p = params
 
     for user in data_dict['User']:
-        if user['language'] == "eng_Latn":
+        if user['language'] == "eng_Latn" and user['source'] == "raw-processed":
             eng_Latn_user = user['text']
-        if user['language'] == target_language_code:
+        if user['language'] == target_language_code and user['source'] == "raw-processed-nllb_translated":
             translated_user = user['text']
     
     for bot in data_dict['Chatbot']:
-        if bot['language'] == "eng_Latn":
+        if bot['language'] == "eng_Latn" and bot['source'] == "raw-gpt_recap":
             eng_Latn_chatbot = bot['text']
-        if bot['language'] == target_language_code:
+        if bot['language'] == target_language_code and bot['source'] == "raw-gpt_recap-nllb_translated":
             translated_chatbot = bot['text']
 
     formatted_input_user = PROMPT.format(raw_sentene=eng_Latn_user, translated_sentene=translated_user)
@@ -64,15 +64,15 @@ def make_request(params):
             output_user = response_user.choices[0].message.content.strip()
             match_user = re.search(r'Rephrase Translated Sentence:\s*(.+)', output_user)
             if match_user:
-                response_user = match_user.group(1)
+                response_user_extract = match_user.group(1)
             else:
                 raise Exception("No match found")
             
             data_dict['User'].append(
                 {
-                    "text": response_user,
+                    "text": response_user_extract,
                     "language": target_language_code,
-                    "source": "raw-nllb_transl-command_r_rephrase",
+                    "source": "raw-processed-nllb_translated-command_r_rephrase",
                 }
             )
             
@@ -91,15 +91,15 @@ def make_request(params):
             output_chatbot = response_chatbot.choices[0].message.content.strip()
             match_chatbot = re.search(r'Rephrase Translated Sentence:\s*(.+)', output_chatbot)
             if match_chatbot:
-                response_chatbot = match_chatbot.group(1)
+                response_chatbot_extract = match_chatbot.group(1)
             else:
                 raise Exception("No match found")
 
             data_dict['Chatbot'].append(
                 {
-                    "text": response_chatbot,
+                    "text": response_chatbot_extract,
                     "language": target_language_code,
-                    "source": "raw-gpt_recap-nllb_transl-command_r_rephrase",
+                    "source": "raw-gpt_recap-nllb_translated-command_r_rephrase",
                 }
             )
 
@@ -108,7 +108,7 @@ def make_request(params):
         except Exception as e:
             print(f"API Error: {e}")
             print(f"count: {retry_count}")
-            print(f"Retring in 30 seconds")
+            print(f"Retring in 10 seconds")
             time.sleep(10)
             retry_count += 1
     
