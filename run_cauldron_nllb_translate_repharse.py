@@ -18,6 +18,24 @@ DATA_DIR = "/home/olivernan_cohere_com/recap_cauldron_translation_2024_10_20_raw
 
 OUTPUT_DIR = "/home/olivernan_cohere_com/recap_cauldron_translation_2024_10_20_raw_rephrased"
 
+dataset_name_list = [
+                    'RecapCauldronAokvqa_translation', 
+                    'RecapCauldronClevr_translation', 
+                    'RecapCauldronCocoqa_translation', 
+                    'RecapCauldronGeomverse_translation', 
+                    'RecapCauldronIconqa_translation', 
+                    'RecapCauldronLocalized_narratives_translation',
+                    'RecapCauldronNlvr2_translation', 
+                    # 'RecapCauldronRaven_translation', 
+                    # 'RecapCauldronSpot_the_diff_translation', 
+                    # 'RecapCauldronTallyqa_translation',
+                    # 'RecapCauldronVqarad_translation',
+                    # 'RecapCauldronVqav2_translation', 
+                    # 'RecapCauldronVsr_translation',
+                    # 'RecapClevrMath_translation',
+                    # 'RecapVisual7Ws_translation'
+                    ]
+
 def main(
     max_tokens: int,
     temperature: float,
@@ -27,7 +45,7 @@ def main(
     os.makedirs("logs/", exist_ok=True)
 
     # for dataset_name in gcfs().listdir(DATA_DIR):
-    for dataset_name in os.listdir(DATA_DIR):
+    for dataset_name in dataset_name_list: #os.listdir(DATA_DIR):
             
         print(f"Dataset: {dataset_name}")
         # processes = []

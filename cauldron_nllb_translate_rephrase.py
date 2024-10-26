@@ -23,15 +23,15 @@ def gcfs():
 client = cohere.ClientV2("MfZwS1plvJfM7vARPs92RbCScEwRniTcCXfmfAdU", base_url="https://stg.api.cohere.ai")
 
 
-PROMPT =  """Given the original text and its translated version, improve the quality of the translated text by rephrasing it. 
-Ensure the rephrased translated text closely aligns with the original text in meaning, structure, tone, and style. 
-Make the translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
-
-Original Text: 
+PROMPT =  """Original Text: 
 {raw_text}\n
 
 Translated Text: 
 {translated_text}\n
+
+Given the original text and its translated version, improve the quality of the translated text by rephrasing it. 
+Ensure the rephrased translated text closely aligns with the original text in meaning, structure, tone, and style. 
+Make the translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
 
 The output must strictly follow this format:
 Rephrased Translated Text: <rephrased translated text placeholder>"""
@@ -73,9 +73,10 @@ def make_request(params):
                 max_tokens = max_tokens,
             )
             output_user = response_user.message.content[0].text.strip()
-            match_user = re.search(r'Rephrased Translated Text:\s*(.+)', output_user)
+            # match_user = re.search(r'Rephrased Translated Text:\s*(.+)', output_user)
+            match_user = re.search(r'Rephrased Translated Text:([\s\S]*)', output_user)
             if match_user:
-                response_user_extract = match_user.group(1)
+                response_user_extract = match_user.group(1).strip()
             else:
                 raise Exception("No match found")
             
@@ -100,9 +101,10 @@ def make_request(params):
                 max_tokens = max_tokens,
             )
             output_chatbot = response_chatbot.message.content[0].text.strip()
-            match_chatbot = re.search(r'Rephrased Translated Text:\s*(.+)', output_chatbot)
+            # match_chatbot = re.search(r'Rephrased Translated Text:\s*(.+)', output_chatbot)
+            match_chatbot = re.search(r'Rephrased Translated Text:([\s\S]*)', output_chatbot)
             if match_chatbot:
-                response_chatbot_extract = match_chatbot.group(1)
+                response_chatbot_extract = match_chatbot.group(1).strip()
             else:
                 raise Exception("No match found")
 
