@@ -8,24 +8,33 @@ import json
 import io
 import cohere
 import re
+import functools
+import gcsfs
 
-client = cohere.ClientV2("EjAoSdeyYwowsjVbf2YywU5dZZhXX1RYi5umpN5x", base_url="https://stg.api.cohere.ai")
+import logging
+logging.basicConfig(
+    level=logging.ERROR,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+@functools.lru_cache(maxsize=1)
+def gcfs():
+    return gcsfs.GCSFileSystem()
+
+client = cohere.ClientV2("MfZwS1plvJfM7vARPs92RbCScEwRniTcCXfmfAdU", base_url="https://stg.api.cohere.ai")
 
 
-PROMPT = """
-Original Sentence: {raw_sentene}\n
-Translated Sentence: {translated_sentene}\n
+PROMPT =  """Given the original text and its translated version, improve the quality of the translated text by rephrasing it. 
+Ensure the rephrased translated text closely aligns with the original text in meaning, structure, tone, and style. 
+Make the translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
 
-Rephrase the translated sentence to enhance its quality, ensuring it aligns closely with the original in meaning, structure, tone, and style.
-Ensure that the rephrased sentence conveys the same meaning as the original sentence but avoid altering the core message or introducing new information. 
-Correct any grammatical errors present in the translated sentence.
-Maintain a structure similar to the original sentence. 
-Match the tone and style of the original sentence. 
-Preserve any stylistic elements such as enumeration, punctuation or capitalization.
+Original Text: 
+{raw_text}\n
 
-The output must strictly follow this format:\n
-Rephrase Translated Sentence: <sentence>"""
+Translated Text: 
+{translated_text}\n
 
+The output must strictly follow this format:
+Rephrased Translated Text: <rephrased translated text placeholder>"""
 
 def make_request(params):
 
@@ -33,21 +42,23 @@ def make_request(params):
 
     for user in data_dict['User']:
         if user['language'] == "eng_Latn" and user['source'] == "raw-processed":
-            eng_Latn_user = user['text']
+            raw_user = user['text']
         if user['language'] == target_language_code and user['source'] == "raw-processed-nllb_translated":
             translated_user = user['text']
     
     for bot in data_dict['Chatbot']:
         if bot['language'] == "eng_Latn" and bot['source'] == "raw-gpt_recap":
-            eng_Latn_chatbot = bot['text']
+            raw_chatbot = bot['text']
         if bot['language'] == target_language_code and bot['source'] == "raw-gpt_recap-nllb_translated":
             translated_chatbot = bot['text']
 
-    formatted_input_user = PROMPT.format(raw_sentene=eng_Latn_user, translated_sentene=translated_user)
-    formatted_input_chatbot = PROMPT.format(raw_sentene=eng_Latn_chatbot, translated_sentene=translated_chatbot)
+    formatted_input_user = PROMPT.format(raw_text=raw_user, translated_text=translated_user)
+    formatted_input_chatbot = PROMPT.format(raw_text=raw_chatbot, translated_text=translated_chatbot)
 
     retry_count = 0
-    while retry_count < 30:
+    response_user = None
+    response_chatbot = None
+    while retry_count < 100:
         try:
             response_user = client.chat(
                 model=engine,
@@ -61,8 +72,8 @@ def make_request(params):
                 p = top_p,
                 max_tokens = max_tokens,
             )
-            output_user = response_user.choices[0].message.content.strip()
-            match_user = re.search(r'Rephrase Translated Sentence:\s*(.+)', output_user)
+            output_user = response_user.message.content[0].text.strip()
+            match_user = re.search(r'Rephrased Translated Text:\s*(.+)', output_user)
             if match_user:
                 response_user_extract = match_user.group(1)
             else:
@@ -88,8 +99,8 @@ def make_request(params):
                 p = top_p,
                 max_tokens = max_tokens,
             )
-            output_chatbot = response_chatbot.choices[0].message.content.strip()
-            match_chatbot = re.search(r'Rephrase Translated Sentence:\s*(.+)', output_chatbot)
+            output_chatbot = response_chatbot.message.content[0].text.strip()
+            match_chatbot = re.search(r'Rephrased Translated Text:\s*(.+)', output_chatbot)
             if match_chatbot:
                 response_chatbot_extract = match_chatbot.group(1)
             else:
@@ -106,10 +117,16 @@ def make_request(params):
             return data_dict
         
         except Exception as e:
-            print(f"API Error: {e}")
-            print(f"count: {retry_count}")
-            print(f"Retring in 10 seconds")
-            time.sleep(10)
+            # print(f"API Error: {e}")
+            # print(f"Retry count: {retry_count}")
+            # print("Retrying in 10 seconds")
+            logging.error(f"API Error: {e}")
+            logging.error(f"Retry count: {retry_count}")
+            logging.error("Retrying in 3 seconds")
+            if retry_count == 98:
+                logging.error(f"Failed: {response_user}")
+                logging.error(f"Failed: {response_chatbot}")
+            time.sleep(3)
             retry_count += 1
     
     return None
@@ -125,13 +142,13 @@ def run_query(
     top_p,
     target_language_code,
 ):
-
+    # with gcfs().open(dataset_path, "r") as file:
     with open(dataset_path, "r") as file:
         dataset = [json.loads(line) for line in file]
 
     # dataset = dataset[:10]
     print(f"dataset size: {len(dataset)}")
-    print(dataset[0])
+    # print(dataset[0])
     # print(dataset[1])
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
@@ -156,7 +173,7 @@ def run_query(
 
     with open(output_dir, "w+") as f:
         for data in new_dataset:
-            f.write(json.dumps(data) + "\n")
+            f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":
@@ -177,29 +194,25 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="/home/olivernan/multimodal_generated_data",
+        default="/home/olivernan/",
         help="Output directory for generated data",
-    )
-    parser.add_argument(
-        "--engine",
-        type=str,
     )
     parser.add_argument(
         "--max_tokens",
         type=int,
-        default=512,
+        default=1024,
         help="Maximum number of tokens to generate",
     )
     parser.add_argument(
         "--temperature",
         type=float,
-        default=0.7,
+        default=0.5,
         help="Temperature for sampling",
     )
     parser.add_argument(
         "--top_p",
         type=float,
-        default=0.9,
+        default=0.8,
         help="Top p for sampling",
     )
     parser.add_argument(
@@ -216,7 +229,7 @@ if __name__ == "__main__":
         num_threads=args.num_threads,
         output_dir=args.output_dir,
         dataset_path=args.dataset_path,
-        engine=args.engine,
+        engine='command-r-plus',
         max_tokens=args.max_tokens,
         temperature=args.temperature,
         top_p=args.top_p,
