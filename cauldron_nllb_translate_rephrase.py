@@ -20,7 +20,7 @@ logging.basicConfig(
 def gcfs():
     return gcsfs.GCSFileSystem()
 
-client = cohere.ClientV2("MfZwS1plvJfM7vARPs92RbCScEwRniTcCXfmfAdU", base_url="https://stg.api.cohere.ai")
+client = cohere.ClientV2("emB7kZItHIqWxs8LVePhNnVClKjcyg2GRJpOKlaU", base_url="https://stg.api.cohere.ai")
 
 
 PROMPT =  """Original Text: 
