@@ -20,7 +20,7 @@ logging.basicConfig(
 def gcfs():
     return gcsfs.GCSFileSystem()
 
-client = cohere.ClientV2("emB7kZItHIqWxs8LVePhNnVClKjcyg2GRJpOKlaU", base_url="https://stg.api.cohere.ai")
+client = cohere.ClientV2("pFtDEOb8bNXq0fl9G832VHePJ1UfLokFNkv5VWhp", base_url="https://stg.api.cohere.ai")
 
 
 PROMPT =  """Original Text: 
@@ -32,8 +32,7 @@ Translation:
 Instruction:
 Given the original text and its translation, improve the quality of the translation by rephrasing it. 
 Ensure the rephrased translation closely aligns with the original text in meaning, structure, tone, and style. 
-Make the repharsed translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
-Do not include any additional comments, explanations, or summaries after the rephrased translation.
+Make the rephrased translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
 
 Output Format:
 Rephrased Translation: <rephrased translation placeholder>"""
@@ -60,7 +59,7 @@ def make_request(params):
     retry_count = 0
     response_user = None
     response_chatbot = None
-    while retry_count < 100:
+    while retry_count < 50:
         try:
             response_user = client.chat(
                 model=engine,
@@ -75,8 +74,7 @@ def make_request(params):
                 max_tokens = max_tokens,
             )
             output_user = response_user.message.content[0].text.strip()
-            # match_user = re.search(r'Rephrased Translated Text:\s*(.+)', output_user)
-            match_user = re.search(r'Rephrased Translated Text:([\s\S]*)', output_user)
+            match_user = re.search(r'Rephrased Translation:([\s\S]*)', output_user)
             if match_user:
                 response_user_extract = match_user.group(1).strip()
             else:
@@ -103,8 +101,7 @@ def make_request(params):
                 max_tokens = max_tokens,
             )
             output_chatbot = response_chatbot.message.content[0].text.strip()
-            # match_chatbot = re.search(r'Rephrased Translated Text:\s*(.+)', output_chatbot)
-            match_chatbot = re.search(r'Rephrased Translated Text:([\s\S]*)', output_chatbot)
+            match_chatbot = re.search(r'Rephrased Translation:([\s\S]*)', output_chatbot)
             if match_chatbot:
                 response_chatbot_extract = match_chatbot.group(1).strip()
             else:
@@ -127,7 +124,7 @@ def make_request(params):
             logging.error(f"API Error: {e}")
             logging.error(f"Retry count: {retry_count}")
             logging.error("Retrying in 3 seconds")
-            if retry_count == 98:
+            if retry_count == 48:
                 logging.error(f"Failed: {response_user}")
                 logging.error(f"Failed: {response_chatbot}")
             time.sleep(3)
