@@ -34,7 +34,7 @@ Given the original text and its translation, improve the quality of the translat
 Ensure the rephrased translation closely aligns with the original text in meaning, structure, tone, and style. 
 Make the rephrased translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
 
-Output Format:
+The output must strictly follow this format:
 Rephrased Translation: <rephrased translation placeholder>"""
 
 def make_request(params):
@@ -59,7 +59,7 @@ def make_request(params):
     retry_count = 0
     response_user = None
     response_chatbot = None
-    while retry_count < 50:
+    while retry_count < 30:
         try:
             response_user = client.chat(
                 model=engine,
@@ -124,7 +124,7 @@ def make_request(params):
             logging.error(f"API Error: {e}")
             logging.error(f"Retry count: {retry_count}")
             logging.error("Retrying in 3 seconds")
-            if retry_count == 48:
+            if retry_count == 28:
                 logging.error(f"Failed: {response_user}")
                 logging.error(f"Failed: {response_chatbot}")
             time.sleep(3)
