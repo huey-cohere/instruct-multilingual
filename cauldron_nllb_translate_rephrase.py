@@ -32,10 +32,10 @@ Translation:
 Instruction:
 Given the original text and its translation, improve the quality of the translation by rephrasing it. 
 Ensure the rephrased translation closely aligns with the original text in meaning, structure, tone, and style. 
-Make the translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
+Make the repharsed translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
 Do not include any additional comments, explanations, or summaries after the rephrased translation.
 
-The output must strictly follow this format:
+Output Format:
 Rephrased Translation: <rephrased translation placeholder>"""
 
 def make_request(params):
