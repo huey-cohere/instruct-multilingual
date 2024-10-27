@@ -10,7 +10,7 @@ import cohere
 import re
 import functools
 import gcsfs
-
+import random
 import logging
 logging.basicConfig(
     level=logging.ERROR,
@@ -26,15 +26,17 @@ client = cohere.ClientV2("emB7kZItHIqWxs8LVePhNnVClKjcyg2GRJpOKlaU", base_url="h
 PROMPT =  """Original Text: 
 {raw_text}\n
 
-Translated Text: 
-{translated_text}\n
+Translation: 
+{translation}\n
 
-Given the original text and its translated version, improve the quality of the translated text by rephrasing it. 
-Ensure the rephrased translated text closely aligns with the original text in meaning, structure, tone, and style. 
+Instruction:
+Given the original text and its translation, improve the quality of the translation by rephrasing it. 
+Ensure the rephrased translation closely aligns with the original text in meaning, structure, tone, and style. 
 Make the translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
+Do not include any additional comments, explanations, or summaries after the rephrased translation.
 
 The output must strictly follow this format:
-Rephrased Translated Text: <rephrased translated text placeholder>"""
+Rephrased Translation: <rephrased translation placeholder>"""
 
 def make_request(params):
 
@@ -52,8 +54,8 @@ def make_request(params):
         if bot['language'] == target_language_code and bot['source'] == "raw-gpt_recap-nllb_translated":
             translated_chatbot = bot['text']
 
-    formatted_input_user = PROMPT.format(raw_text=raw_user, translated_text=translated_user)
-    formatted_input_chatbot = PROMPT.format(raw_text=raw_chatbot, translated_text=translated_chatbot)
+    formatted_input_user = PROMPT.format(raw_text=raw_user, translation=translated_user)
+    formatted_input_chatbot = PROMPT.format(raw_text=raw_chatbot, translation=translated_chatbot)
 
     retry_count = 0
     response_user = None
@@ -147,6 +149,9 @@ def run_query(
     # with gcfs().open(dataset_path, "r") as file:
     with open(dataset_path, "r") as file:
         dataset = [json.loads(line) for line in file]
+
+    if 'RecapCauldronIconqa' in dataset_path:
+        dataset = random.sample(dataset, 5000)
 
     # dataset = dataset[:10]
     print(f"dataset size: {len(dataset)}")
