@@ -179,7 +179,7 @@ def main():
         del dataset
         
         os.makedirs(f"{DATA_DIR}/{dataset_name}_translation", exist_ok=True)
-        os.makedirs("logs/", exist_ok=True)
+        os.makedirs("logs-2/", exist_ok=True)
         # dataset_paths = [f"{DATA_DIR}/{dataset_name}_translation/raw_data/splits/{path}" for path in os.listdir(f"{DATA_DIR}/{dataset_name}/raw_data/splits")]
         for code, language in aya23_code2lang.items():
             # if language != "English":
@@ -203,7 +203,7 @@ def main():
                 --target_language_code {code} \
                 --source_language_code eng_Latn \
                 --url {port_url} \
-                --output_dir {output_dir} > logs/{dataset_name}_{code}_{i}.out
+                --output_dir {output_dir} > logs-2/{dataset_name}_{code}_{i}.out
                 """
 
                 print("Running generation command")

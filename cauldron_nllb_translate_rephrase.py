@@ -20,7 +20,7 @@ logging.basicConfig(
 def gcfs():
     return gcsfs.GCSFileSystem()
 
-client = cohere.ClientV2("pFtDEOb8bNXq0fl9G832VHePJ1UfLokFNkv5VWhp", base_url="https://stg.api.cohere.ai")
+client = cohere.ClientV2("R8fQH9pZzw70Ixq3eOmcLKiCaZVS0wHs7eUc82dU", base_url="https://stg.api.cohere.ai")
 
 
 PROMPT =  """Original Text: 
@@ -74,7 +74,7 @@ def make_request(params):
                 max_tokens = max_tokens,
             )
             output_user = response_user.message.content[0].text.strip()
-            match_user = re.search(r'Rephrased Translation:([\s\S]*)', output_user)
+            match_user = re.search(r'Rephrased Translation[:：∶﹕]([\s\S]*)', output_user)
             if match_user:
                 response_user_extract = match_user.group(1).strip()
             else:
@@ -101,7 +101,7 @@ def make_request(params):
                 max_tokens = max_tokens,
             )
             output_chatbot = response_chatbot.message.content[0].text.strip()
-            match_chatbot = re.search(r'Rephrased Translation:([\s\S]*)', output_chatbot)
+            match_chatbot = re.search(r'Rephrased Translation[:：∶﹕]([\s\S]*)', output_chatbot)
             if match_chatbot:
                 response_chatbot_extract = match_chatbot.group(1).strip()
             else:
