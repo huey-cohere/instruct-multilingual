@@ -147,9 +147,6 @@ def run_query(
     with open(dataset_path, "r") as file:
         dataset = [json.loads(line) for line in file]
 
-    if ('RecapCauldronIconqa' in dataset_path) or ('RecapCauldronRaven' in dataset_path):
-        dataset = random.sample(dataset, 5000)
-
     # dataset = dataset[:10]
     print(f"dataset size: {len(dataset)}")
     # print(dataset[0])
