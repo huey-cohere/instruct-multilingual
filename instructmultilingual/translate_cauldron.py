@@ -190,7 +190,7 @@ def translate_sent_by_sent(
 #     ]
 
 def translate_dataset_via_inference_api(
-    dataset,
+    dataset_path,
     target_language_code: str,
     source_language_code: str,
     url: str = "http://localhost:8000/translate",
@@ -198,8 +198,15 @@ def translate_dataset_via_inference_api(
 ) -> None:
 
     start_time = time.time()
+    size = 0
+    with open(dataset_path, "r") as file, open(output_dir, "w") as output_file:
+        for line in tqdm(file):
+            data = json.loads(line)
+            translated_data = translate_sent_by_sent((data, url, source_language_code, target_language_code))
+            output_file.write(json.dumps(translated_data, ensure_ascii=False) + "\n")
+            size += 1
 
-    translated_dataset = []
+    # translated_dataset = []
 
     # with ThreadPoolExecutor(max_workers=4) as executor:
     #     # futures = []
@@ -220,59 +227,61 @@ def translate_dataset_via_inference_api(
     #             translated_dataset.append(result)
 
     
-    for data in tqdm(dataset):
-        translated_dataset.append(translate_sent_by_sent((data, url, source_language_code, target_language_code)))
+    # for data in tqdm(dataset):
+    #     translated_dataset.append(translate_sent_by_sent((data, url, source_language_code, target_language_code)))
 
 
-    print(f"Translated {len(translated_dataset)} samples")
+    # print(f"Translated {len(translated_dataset)} samples")
     
-    # print(translated_dataset)
+    # # print(translated_dataset)
 
-    # os.makedirs(output_dir, exist_ok=True)
-    with open(output_dir, "w") as f:
-        for data in translated_dataset:
-            f.write(json.dumps(data, ensure_ascii=False) + "\n")
+    # # os.makedirs(output_dir, exist_ok=True)
+    # with open(output_dir, "w") as f:
+    #     for data in translated_dataset:
+    #         f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
+    print(f"Translated {size} samples")
+    
     end_time = time.time()
     elapsed_time = end_time - start_time
     
     print(f"Elapsed time: {elapsed_time:.4f} seconds")
 
 
-def translate_dataset(dataset_path,
-                      source_language_code: str,
-                      target_language_code: str,
-                      url: str = "http://localhost:8000/translate",
-                      output_dir: str = "./datasets",) -> None:
+# def translate_dataset(dataset_path,
+#                       source_language_code: str,
+#                       target_language_code: str,
+#                       url: str = "http://localhost:8000/translate",
+#                       output_dir: str = "./datasets",) -> None:
 
-    with open(dataset_path, "r") as file:
-        # dataset = []
-        # for line in file:
-        #     dataset.append(json.loads(line))
-        #     if len(dataset) == 10:
-        #         break
-        dataset = [json.loads(line) for line in file]
-    # print(dataset[0])
+#     # with open(dataset_path, "r") as file:
+#     #     # dataset = []
+#     #     # for line in file:
+#     #     #     dataset.append(json.loads(line))
+#     #     #     if len(dataset) == 10:
+#     #     #         break
+#     #     dataset = [json.loads(line) for line in file]
+#     # # print(dataset[0])
 
-    print(f"Dataset size: {len(dataset)}")
+#     # print(f"Dataset size: {len(dataset)}")
 
-    # for code, language in aya23_code2lang.items():
-    #     if language != "English":
-    #         print(f"Currently translating: {language}")
-    #         translate_dataset_via_inference_api(
-    #             dataset=dataset,
-    #             target_language_code=code,
-    #             url=url,
-    #             output_dir=output_dir,
-    #         )
+#     # for code, language in aya23_code2lang.items():
+#     #     if language != "English":
+#     #         print(f"Currently translating: {language}")
+#     #         translate_dataset_via_inference_api(
+#     #             dataset=dataset,
+#     #             target_language_code=code,
+#     #             url=url,
+#     #             output_dir=output_dir,
+#     #         )
 
-    translate_dataset_via_inference_api(
-        dataset=dataset,
-        source_language_code=source_language_code,
-        target_language_code=target_language_code,
-        url=url,
-        output_dir=output_dir,
-    )
+#     translate_dataset_via_inference_api(
+#         dataset_path=dataset_path,
+#         source_language_code=source_language_code,
+#         target_language_code=target_language_code,
+#         url=url,
+#         output_dir=output_dir,
+#     )
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Translate datasets from huggingface hub using a variety of methods.")
@@ -283,7 +292,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_dir", type=str, default="./datasets", help="Output directory for the translated dataset")
     args = parser.parse_args()
     print(args)
-    translate_dataset(
+    translate_dataset_via_inference_api(
         dataset_path=args.dataset_path,
         target_language_code=args.target_language_code,
         source_language_code=args.source_language_code,
