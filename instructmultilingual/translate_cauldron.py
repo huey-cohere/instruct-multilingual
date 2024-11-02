@@ -200,7 +200,7 @@ def translate_dataset_via_inference_api(
     start_time = time.time()
     size = 0
     with open(dataset_path, "r") as file, open(output_dir, "w") as output_file:
-        for line in tqdm(file):
+        for line in tqdm(file, desc="translating", unit="line"):
             data = json.loads(line)
             translated_data = translate_sent_by_sent((data, url, source_language_code, target_language_code))
             output_file.write(json.dumps(translated_data, ensure_ascii=False) + "\n")
@@ -241,7 +241,7 @@ def translate_dataset_via_inference_api(
     #         f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
     print(f"Translated {size} samples")
-    
+
     end_time = time.time()
     elapsed_time = end_time - start_time
     

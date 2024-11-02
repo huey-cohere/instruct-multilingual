@@ -34,8 +34,8 @@ dataset_name_list = [
                     # 'RecapCauldronVsr_translation',
                     # 'RecapClevrMath_translation',
                     # 'RecapVisual7Ws_translation'
-                    'RecapFINAQA_translation',
-                    'RecapMultiHiertt_translation',
+                    'RecapFINQA_translation',
+                    # 'RecapMultiHiertt_translation',
                     ]
 
 def main(
@@ -211,7 +211,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_threads",
         type=int,
-        default=96,
+        default=124,
         help="Number of threads to use for preprocessing",
     )
     args = parser.parse_args()

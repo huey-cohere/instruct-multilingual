@@ -20,7 +20,7 @@ logging.basicConfig(
 def gcfs():
     return gcsfs.GCSFileSystem()
 
-client = cohere.ClientV2("R8fQH9pZzw70Ixq3eOmcLKiCaZVS0wHs7eUc82dU", base_url="https://stg.api.cohere.ai")
+client = cohere.ClientV2("UYJfqTesEQphAZXCB7rYycCq5xx1Y2CfDj23EiQr", base_url="https://stg.api.cohere.ai")
 
 
 PROMPT =  """Original Text: 
@@ -32,7 +32,7 @@ Translation:
 Instruction:
 Given the original text and its translation, improve the quality of the translation by rephrasing it. 
 Ensure the rephrased translation closely aligns with the original text in meaning, structure, tone, and style. 
-Make the rephrased translation sound natural and fluent in the target language while preserving the core message, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, punctuation, capitalization, spacing, line breaks, etc.) from the original.
+Make the rephrased translation sound natural and fluent in the target language while preserving all essential details, correcting any grammatical errors, and retaining all stylistic elements (e.g., enumeration, parentheses, punctuation, capitalization, spacing, line breaks, etc.) from the original.
 
 The output must strictly follow this format:
 Rephrased Translation: <rephrased translation placeholder>"""
