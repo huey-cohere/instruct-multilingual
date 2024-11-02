@@ -44,13 +44,17 @@
 # # RecapCauldronRaven:
 # #   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_reformat_processed_remove_trailing_sentences_raw/RecapCauldronRaven/train.jsonl
 
-RecapCauldronIconqa:
-  path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_reformat_processed_remove_trailing_sentences_raw/RecapCauldronIconqa/train.jsonl
-  downsample_num: 5000
+# RecapCauldronIconqa:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_reformat_processed_remove_trailing_sentences_raw/RecapCauldronIconqa/train.jsonl
+#   downsample_num: 5000
 
-RecapCauldronNlvr2:
-  path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_reformat_processed_remove_trailing_sentences_raw/RecapCauldronNlvr2/train.jsonl
-  downsample_num: 5000
+# RecapCauldronNlvr2:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_cauldron_2024_09_10_reformat_processed_remove_trailing_sentences_raw/RecapCauldronNlvr2/train.jsonl
+#   downsample_num: 5000
+
+# RecapFINQA:
+#   path: gs://cohere-command/data/olivernan/gpt_recaption_data_2024_11_01_raw/RecapFINQA/train.jsonl
+
 
 
 

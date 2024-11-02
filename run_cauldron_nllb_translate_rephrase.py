@@ -14,18 +14,18 @@ import shutil
 # def gcfs():
 #     return gcsfs.GCSFileSystem()
 
-DATA_DIR = "/home/olivernan_cohere_com/recap_cauldron_translation_2024_10_20_raw"
+DATA_DIR = "/home/olivernan_cohere_com/recap_data_translation_2024_11_01_raw"
 
-OUTPUT_DIR = "/home/olivernan_cohere_com/recap_cauldron_translation_2024_10_20_raw_rephrased"
+OUTPUT_DIR = "/home/olivernan_cohere_com/recap_data_translation_2024_11_01_raw_rephrased"
 
 dataset_name_list = [
-                    'RecapCauldronAokvqa_translation', 
-                    'RecapCauldronClevr_translation', 
-                    'RecapCauldronCocoqa_translation', 
-                    'RecapCauldronGeomverse_translation', 
-                    'RecapCauldronIconqa_translation', 
-                    'RecapCauldronLocalized_narratives_translation',
-                    'RecapCauldronNlvr2_translation', 
+                    # 'RecapCauldronAokvqa_translation', 
+                    # 'RecapCauldronClevr_translation', 
+                    # 'RecapCauldronCocoqa_translation', 
+                    # 'RecapCauldronGeomverse_translation', 
+                    # 'RecapCauldronIconqa_translation', 
+                    # 'RecapCauldronLocalized_narratives_translation',
+                    # 'RecapCauldronNlvr2_translation', 
                     # 'RecapCauldronRaven_translation', 
                     # 'RecapCauldronSpot_the_diff_translation', 
                     # 'RecapCauldronTallyqa_translation',
@@ -34,6 +34,8 @@ dataset_name_list = [
                     # 'RecapCauldronVsr_translation',
                     # 'RecapClevrMath_translation',
                     # 'RecapVisual7Ws_translation'
+                    'RecapFINAQA_translation',
+                    'RecapMultiHiertt_translation',
                     ]
 
 def main(
@@ -52,6 +54,9 @@ def main(
         # for language in gcfs().listdir(f"{DATA_DIR}/{dataset_name}"):
         for language in os.listdir(f"{DATA_DIR}/{dataset_name}"):
 
+            # if language not in ['pol_Latn']:
+            #     continue
+            
             print(f"Dataset: {dataset_name}, Language: {language}")
 
             dataset_path = f"{DATA_DIR}/{dataset_name}/{language}/train.jsonl"

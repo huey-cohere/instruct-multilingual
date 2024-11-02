@@ -10,7 +10,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 logs/
-
+MultiHiertt_images/
+finqa_images/
+table_data/
 # C extensions
 *.so
 
