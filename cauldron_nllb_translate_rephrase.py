@@ -20,7 +20,15 @@ logging.basicConfig(
 def gcfs():
     return gcsfs.GCSFileSystem()
 
-client = cohere.ClientV2("UYJfqTesEQphAZXCB7rYycCq5xx1Y2CfDj23EiQr", base_url="https://stg.api.cohere.ai")
+# KEYS = [
+#     "XvksMYmZbQF0aagROSgmbTbiL4auprJmQtWk7iFP",
+#     "lTYH3NXmWOIHN3YTlTeqKpU4P9KE6OCPZVloFl1r",
+#     "d2sp1KIdlgtZLFNNtsuKyjeVCOhNftX5JrhSqc0w",
+#     "uYmBYC5XvWkZOqGVDmDHXNruifzdGX4orSqNKXqk",
+#     "tSXdF7KPl9ZZtxo3ZnVn3DTtCTOFd5InbyGsjrJM",
+#     ]
+
+client = cohere.ClientV2("tSXdF7KPl9ZZtxo3ZnVn3DTtCTOFd5InbyGsjrJM", base_url="https://stg.api.cohere.com") # base_url="https://stg.api.cohere.ai"
 
 
 PROMPT =  """Original Text: 
@@ -40,7 +48,7 @@ Rephrased Translation: <rephrased translation placeholder>"""
 def make_request(params):
 
     data_dict, engine, target_language_code, max_tokens, temperature, top_p = params
-
+    
     for user in data_dict['User']:
         if user['language'] == "eng_Latn" and user['source'] == "raw-processed":
             raw_user = user['text']
@@ -222,6 +230,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+
     print(args)
 
     # run_inference(num_proc=args.num_proc, output_dir=args.output_dir, dataset_path=args.dataset_path)

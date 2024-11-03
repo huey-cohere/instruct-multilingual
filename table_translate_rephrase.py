@@ -15,6 +15,7 @@ import dataframe_image as dfi
 import pandas as pd
 import base64
 import io
+from PIL import Image
 
 logging.basicConfig(
     level=logging.ERROR,
@@ -24,8 +25,15 @@ logging.basicConfig(
 HEADER_COLORS = ['lightgreen', 'green', 'lightsteelblue', 'powderblue', 'sandybrown', 'lightsalmon', 'lightskyblue', 'lightgray', 'greenyellow', 'lightseagreen', 'lightslategray', ]
 BACKGROUND_COLORS = ['lightblue', 'aqua', 'cyan', 'honeydew', 'ivory', 'lemonchiffon', 'ghostwhite', 'gainsboro', 'mistyrose', 'powderblue', 'snow', 'whitesmoke', 'lime', 'lightskyblue','khaki', 'mediumaquamarine']  
 
+KEYS = [
+    "XvksMYmZbQF0aagROSgmbTbiL4auprJmQtWk7iFP",
+    "lTYH3NXmWOIHN3YTlTeqKpU4P9KE6OCPZVloFl1r",
+    "d2sp1KIdlgtZLFNNtsuKyjeVCOhNftX5JrhSqc0w",
+    "uYmBYC5XvWkZOqGVDmDHXNruifzdGX4orSqNKXqk",
+    # "tSXdF7KPl9ZZtxo3ZnVn3DTtCTOFd5InbyGsjrJM",
+    ]
 
-client = cohere.ClientV2("UYJfqTesEQphAZXCB7rYycCq5xx1Y2CfDj23EiQr", base_url="https://stg.api.cohere.ai")
+client = cohere.ClientV2(random.choice(KEYS), base_url="https://stg.api.cohere.com") # "https://stg.api.cohere.ai"
 
 PROMPT =  """Original Text: 
 {raw_text}\n
@@ -45,7 +53,7 @@ Rephrased Translation: <rephrased translation placeholder>"""
 def covert_to_table_image(table):
 
     df = pd.DataFrame(table)
-
+    
     styled_df = (
         df.style
         .hide(axis="index")
@@ -68,17 +76,24 @@ def covert_to_table_image(table):
         })
     )
 
-    # dfi.export(styled_df,f"images/{name}.jpeg")
-    buffer = io.BytesIO()
-    dfi.export(styled_df, buffer, format="jpeg")
-    buffer.seek(0)  # Move to the start of the buffer
+    # dfi.export(styled_df,f"finqa_translated_images/1.jpeg")
 
-    # with open(f'images/{name}.jpeg', "rb") as image_file:
+    # with open(f'finqa_translated_images/1.jpeg', "rb") as image_file:
+    #     print(image_file.read())
     #     encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
 
-    encoded_image = base64.b64encode(buffer.read()).decode("utf-8")
-    buffer.close()
+    with io.BytesIO() as buffer:
+        dfi.export(styled_df, buffer)
+        buffer.seek(0)  
+        encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
+        # image = Image.open(buffer)
+        # with io.BytesIO() as jpeg_buffer:
+        #     image.convert("RGB").save(jpeg_buffer, format="JPEG")
+        #     jpeg_buffer.seek(0)
+
+        #     encoded_image = base64.b64encode(jpeg_buffer.getvalue()).decode("utf-8")
+    
     return f"data:image/jpeg;base64,{encoded_image}"
 
 def inference_request(url: str, source_language: str, target_language: str, texts: List[str]) -> List[str]:
@@ -159,49 +174,50 @@ def translate_table(
         for cell in row:
             if bool(re.fullmatch(r'^[\d\W_]*$', cell)):
                 translate_row.append(cell)
+                continue
+            
+            translation = {'text': cell}
+
+            keys_to_be_translated = ["text"]
+
+            sentenized_example = defaultdict(list)
+
+            for k in keys_to_be_translated:
+                sentenized_example[f"{k}_pos"].append(0)
+
+            for k in translation.keys():
+                sentences = split_text_into_sentences(text=translation[k], language='en')
+                sentenized_example[k].extend(sentences)
+                sentenized_example[f"{k}_pos"].append(sentenized_example[f"{k}_pos"][-1] + len(sentences))
+            
+            result = call_inference_api(example=sentenized_example,
+                                        url=url,
+                                        keys_to_be_translated=keys_to_be_translated,
+                                        source_language_code=source_language_code,
+                                        target_language_code=target_language_code)
+            
+            for k in keys_to_be_translated:
+                merged_texts = []
+                l = 0
+                r = 1
+                while r < len(result[f"{k}_pos"]):
+                    start = result[f"{k}_pos"][l]
+                    end = result[f"{k}_pos"][r]
+                    merged_texts.append(' '.join(result[k][start:end]))
+                    l += 1
+                    r += 1
+                translation[k] = merged_texts[0]
+            
+            rephrased_translation = rephrase(cell, translation['text'], engine, temperature, top_p, max_tokens)
+
+            if rephrased_translation is not None:
+                translate_row.append(rephrased_translation)
             else:
-                translation = {'text': cell}
-
-                keys_to_be_translated = ["text"]
-
-                sentenized_example = defaultdict(list)
-
-                for k in keys_to_be_translated:
-                    sentenized_example[f"{k}_pos"].append(0)
-
-                for k in translation.keys():
-                    sentences = split_text_into_sentences(text=translation[k], language='en')
-                    sentenized_example[k].extend(sentences)
-                    sentenized_example[f"{k}_pos"].append(sentenized_example[f"{k}_pos"][-1] + len(sentences))
-                
-                result = call_inference_api(example=sentenized_example,
-                                            url=url,
-                                            keys_to_be_translated=keys_to_be_translated,
-                                            source_language_code=source_language_code,
-                                            target_language_code=target_language_code)
-                
-                for k in keys_to_be_translated:
-                    merged_texts = []
-                    l = 0
-                    r = 1
-                    while r < len(result[f"{k}_pos"]):
-                        start = result[f"{k}_pos"][l]
-                        end = result[f"{k}_pos"][r]
-                        merged_texts.append(' '.join(result[k][start:end]))
-                        l += 1
-                        r += 1
-                    translation[k] = merged_texts[0]
-                
-                rephrased_translation = rephrase(cell, translation['text'], engine, temperature, top_p, max_tokens)
-
-                if rephrased_translation is not None:
-                    translate_row.append(rephrased_translation)
-                else:
-                    translate_row.append(cell)
+                translate_row.append(cell)
 
         translated_table.append(translate_row)
 
-                
+    return translated_table
 
 def translate_dataset_via_inference_api(
     dataset_path,
@@ -217,34 +233,21 @@ def translate_dataset_via_inference_api(
 
     start_time = time.time()
 
-    
     size = 0
     with open(dataset_path, "r") as file, open(output_dir, "w") as f:
-        for line in tqdm(file, desc="translating", unit="line"):
+        for i, line in enumerate(tqdm(file, desc="translating", unit="sample")):
             translated_table_images = []
             translated_tables = []
             data = json.loads(line)
             tables = data['Table']
-            for table in tables:
+            for j, table in enumerate(tables):
                 translated_table = translate_table((table, url, engine, source_language_code, target_language_code, max_tokens, temperature, top_p))
                 translated_tables.append(translated_table)
-                translated_table_images.append(covert_to_table_image(translated_table))
+                translated_table_images.append(covert_to_table_image(translated_table)) #, f"{i}_{j}"
             data['Translated_Image'] = translated_table_images
             data['Translated_Table'] = translated_tables
             f.write(json.dumps(data, ensure_ascii=False) + "\n")
             size += 1
-
-    # for data in dataset:
-    #     tables = data['tables']
-    #     for table in tables:
-    #         translated_table = translate_table((table, url, engine, source_language_code, target_language_code, max_tokens, temperature, top_p))
-
-                           
-    # print(f"Translated {len(translated_dataset)} samples")
-
-    # with open(output_dir, "w") as f:
-    #     for data in translated_dataset:
-    #         f.write(json.dumps(data, ensure_ascii=False) + "\n")
 
     print(f"Translated {size} samples")
 

@@ -16,6 +16,9 @@ DATA_DIR = "/home/olivernan_cohere_com/recap_data_translation_2024_11_01_raw_rep
 OUTPUT_DIR = "/home/olivernan_cohere_com/recap_data_translation_2024_11_01_raw_repharsed_table_translated"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+# os.makedirs("finqa_translated_images", exist_ok=True)
+os.makedirs("logs/", exist_ok=True)
+
 SERVER_PORT_LIST = [f"http://localhost:{8000 + i}/translate" for i in range(64)]
 
 def main(max_tokens: int, temperature: float, top_p: float):
@@ -31,14 +34,14 @@ def main(max_tokens: int, temperature: float, top_p: float):
         
             print(f"Dataset size: {len(dataset)}")
             
-            num_per_server = math.ceil(len(dataset) / len(SERVER_PORT_LIST))
+            num_per_server = math.ceil(len(dataset) / (len(SERVER_PORT_LIST)))
             dataset_chunk = [
                 dataset[i : i + num_per_server] for i in range(0, len(dataset), num_per_server)
             ]
             dataset_paths = []
-            os.makedirs(f"{OUTPUT_DIR}/{dataset_name}/raw_data/splits", exist_ok=True)
+            os.makedirs(f"{OUTPUT_DIR}/{dataset_name}/{lang}/raw_data", exist_ok=True)
             for i, chunk in enumerate(dataset_chunk):
-                _path = f"{OUTPUT_DIR}/{dataset_name}/raw_data/splits/split_{i}.jsonl"
+                _path = f"{OUTPUT_DIR}/{dataset_name}/{lang}/raw_data/split_{i}.jsonl"
                 dataset_paths.append(_path)
                 with open(_path, "w+") as f:
                     for i, line in enumerate(chunk):
@@ -48,7 +51,6 @@ def main(max_tokens: int, temperature: float, top_p: float):
             del dataset
 
             os.makedirs(f"{OUTPUT_DIR}/{dataset_name}", exist_ok=True)
-            os.makedirs("logs/", exist_ok=True)
 
             processes = []
             # for i, path in enumerate(dataset_paths):
@@ -57,13 +59,13 @@ def main(max_tokens: int, temperature: float, top_p: float):
                 port_url = SERVER_PORT_LIST[i % len(SERVER_PORT_LIST)]
 
                 output_dir = (
-                    f"{OUTPUT_DIR}/{dataset_name}/{lang}/splits/split_{i}.jsonl"
+                    f"{OUTPUT_DIR}/{dataset_name}/{lang}/translated_splits/split_{i}.jsonl"
                 )
                 
-                os.makedirs(f"{OUTPUT_DIR}/{dataset_name}/{lang}/splits/", exist_ok=True)
+                os.makedirs(f"{OUTPUT_DIR}/{dataset_name}/{lang}/translated_splits/", exist_ok=True)
 
                 command = f"""
-                nohup python instructmultilingual/table_translate_rephrase.py \
+                nohup python table_translate_rephrase.py \
                 --dataset_path {path} \
                 --target_language_code {lang} \
                 --source_language_code eng_Latn \
@@ -80,7 +82,7 @@ def main(max_tokens: int, temperature: float, top_p: float):
 
                 processes.append(process)
 
-                if len(processes) == len(SERVER_PORT_LIST):
+                if len(processes) == (len(SERVER_PORT_LIST)):
                     for process in processes:
                         process.wait()
                     processes = [] 
@@ -94,10 +96,10 @@ def main(max_tokens: int, temperature: float, top_p: float):
                 f"{OUTPUT_DIR}/{dataset_name}/{lang}/train.jsonl",
                 "w+",
             ) as outfile:
-                for split in os.listdir(f"{OUTPUT_DIR}/{dataset_name}/{lang}/splits"):
+                for split in os.listdir(f"{OUTPUT_DIR}/{dataset_name}/{lang}/translated_splits"):
                     print(f"Merging {split}")
                     with open(
-                        f"{OUTPUT_DIR}/{dataset_name}_translation/{lang}/splits/{split}", "r"
+                        f"{OUTPUT_DIR}/{dataset_name}/{lang}/translated_splits/{split}", "r"
                     ) as infile:
                         for line in infile:
                             data = json.loads(line)
@@ -108,9 +110,9 @@ def main(max_tokens: int, temperature: float, top_p: float):
 
             print(f"All files merged into {OUTPUT_DIR}/{dataset_name}/{lang}/train.jsonl")
             
-            shutil.rmtree(f"{OUTPUT_DIR}/{dataset_name}/{lang}/splits/")
+            shutil.rmtree(f"{OUTPUT_DIR}/{dataset_name}/{lang}/translated_splits/")
 
-        shutil.rmtree(f"{OUTPUT_DIR}/{dataset_name}/raw_data/")
+            shutil.rmtree(f"{OUTPUT_DIR}/{dataset_name}/{lang}/raw_data/")
 
 
         # break
