@@ -21,11 +21,17 @@ os.makedirs("logs/", exist_ok=True)
 
 SERVER_PORT_LIST = [f"http://localhost:{8000 + i}/translate" for i in range(64)]
 
-def main(max_tokens: int, temperature: float, top_p: float):
+def main():
 
     for dataset_name in os.listdir(DATA_DIR):
+        
+        if dataset_name not in ['RecapMultiHiertt_translation']:
+            continue
 
         for lang in os.listdir(f"{DATA_DIR}/{dataset_name}"):
+
+            if lang not in ['heb_Hebr', 'ita_Latn', 'ron_Latn']:
+                continue
 
             print(f"Dataset: {dataset_name} Language: {lang}")
 
@@ -65,14 +71,11 @@ def main(max_tokens: int, temperature: float, top_p: float):
                 os.makedirs(f"{OUTPUT_DIR}/{dataset_name}/{lang}/translated_splits/", exist_ok=True)
 
                 command = f"""
-                nohup python table_translate_rephrase.py \
+                nohup python table_translate.py \
                 --dataset_path {path} \
                 --target_language_code {lang} \
                 --source_language_code eng_Latn \
                 --url {port_url} \
-                --max_tokens {max_tokens} \
-                --temperature {temperature} \
-                --top_p {top_p} \
                 --output_dir {output_dir} > logs/table-{dataset_name}_{lang}_{i}.out
                 """
 
@@ -120,35 +123,35 @@ def main(max_tokens: int, temperature: float, top_p: float):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
-        description="run command r repharse on cauldron datasets"
-    )
+    # parser = argparse.ArgumentParser(
+    #     description="run command r repharse on cauldron datasets"
+    # )
 
-    parser.add_argument(
-        "--max_tokens",
-        type=int,
-        default=1024,
-        help="Maximum number of tokens to generate",
-    )
-    parser.add_argument(
-        "--temperature",
-        type=float,
-        default=0.5,
-        help="Temperature for sampling",
-    )
-    parser.add_argument(
-        "--top_p",
-        type=float,
-        default=0.9,
-        help="Top p for sampling",
-    )
-    args = parser.parse_args()
+    # parser.add_argument(
+    #     "--max_tokens",
+    #     type=int,
+    #     default=1024,
+    #     help="Maximum number of tokens to generate",
+    # )
+    # parser.add_argument(
+    #     "--temperature",
+    #     type=float,
+    #     default=0.5,
+    #     help="Temperature for sampling",
+    # )
+    # parser.add_argument(
+    #     "--top_p",
+    #     type=float,
+    #     default=0.9,
+    #     help="Top p for sampling",
+    # )
+    # args = parser.parse_args()
 
-    print(args)
+    # print(args)
     main(
-        args.max_tokens,
-        args.temperature,
-        args.top_p,
+        # args.max_tokens,
+        # args.temperature,
+        # args.top_p,
     )
 
 
