@@ -123,46 +123,11 @@ import time
 HEADER_COLORS = ['lightgreen', 'green', 'lightsteelblue', 'powderblue', 'sandybrown', 'lightsalmon', 'lightskyblue', 'lightgray', 'greenyellow', 'lightseagreen', 'lightslategray', ]
 BACKGROUND_COLORS = ['lightblue', 'aqua', 'cyan', 'honeydew', 'ivory', 'lemonchiffon', 'ghostwhite', 'gainsboro', 'mistyrose', 'powderblue', 'snow', 'whitesmoke', 'lime', 'lightskyblue','khaki', 'mediumaquamarine']  
 
-# def get_dir_list():
-#     return [(lang, os.path.join(FOLDER, lang, "train.jsonl")) for lang in os.listdir(FOLDER)]
-
-def image_render(table):
-    df = pd.DataFrame(table)
-
-    styled_df = (
-        df.style
-        .hide(axis="index")
-        .hide(axis="columns")
-        .set_table_styles([
-            {'selector': 'tbody tr:nth-child(n+2)', 'props': [('background-color', random.choice(BACKGROUND_COLORS))]},
-            {'selector': 'tbody tr:nth-child(1)', 'props': [('background-color', random.choice(HEADER_COLORS))]},
-            {'selector': 'table', 'props': [
-                ('border', '1px solid white'),
-            ]},
-            {'selector': 'td', 'props': [
-                ('min-width', '150px'), 
-                ('max-width', '450px'),
-                ('padding', '15px'),
-            ]}
-        ])
-        .set_properties(**{
-            'text-align': 'center',
-            'font-size': '12px',
-        })
-    )
-
-    with io.BytesIO() as buffer:
-        dfi.export(styled_df, buffer)
-        buffer.seek(0)
-        encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
-
-    return f"data:image/jpeg;base64,{encoded_image}"
-
 def convert_to_table_image(data):
     
     tables = data["Translated_Table"]
 
-    Translated_Image = []
+    Translated_Images = []
 
     for table in tables:
         df = pd.DataFrame(table)
@@ -194,12 +159,9 @@ def convert_to_table_image(data):
             buffer.seek(0)
             encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
         
-        Translated_Image.append(f"data:image/jpeg;base64,{encoded_image}")
+        Translated_Images.append(f"data:image/jpeg;base64,{encoded_image}")
 
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=24) as executor:
-    #     Translated_Image = list(executor.map(image_render, tables)) #list(tqdm(executor.map(image_render, tables), total=len(tables), desc="Rendering Tables"))
-
-    data['Translated_Image'] = Translated_Image
+    data['Translated_Image'] = Translated_Images
 
     return data
 
@@ -209,7 +171,7 @@ def process_single_file(input_path, output_path):
     with open(input_path, "r") as input_file:
         dataset = [json.loads(line) for line in input_file]
     
-    dataset = dataset[:200]
+    # dataset = dataset[:200]
 
     print(f"Processing {input_path.split('/')[-2]} file with {len(dataset)} samples...")
     
