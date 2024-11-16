@@ -87,8 +87,8 @@ class asyncio_rephrase_table(abc.ABC):
                 print(f"API Error: {e}")
                 print(f"Retry count: {num_retries}")
                 print("Retrying in 3 seconds")
-                if num_retries == 28:
-                    print(f"Failed: {response}")
+                # if num_retries == 28:
+                #     print(f"Failed: {response}")
                 await asyncio.sleep(3)
                 num_retries += 1
 
@@ -229,7 +229,8 @@ def main(args):
         df = pd.read_json(os.path.join(args.dataset_path, lang, "train.jsonl"), lines=True)
 
         df['Translated_Table'] = completions
-
+        
+        os.makedirs(os.path.join(args.output_dir, lang), exist_ok=True)
         with open(os.path.join(args.output_dir, lang, "train.jsonl"), 'w', encoding='utf-8') as file:
             df.to_json(file, orient="records", lines=True,  force_ascii=False)
 
@@ -268,6 +269,56 @@ if __name__ == "__main__":
 
 
 
+
+# HEADER_COLORS = ['lightgreen', 'green', 'lightsteelblue', 'powderblue', 'sandybrown', 'lightsalmon', 'lightskyblue', 'lightgray', 'greenyellow', 'lightseagreen', 'lightslategray', ]
+# BACKGROUND_COLORS = ['lightblue', 'aqua', 'cyan', 'honeydew', 'ivory', 'lemonchiffon', 'ghostwhite', 'gainsboro', 'mistyrose', 'powderblue', 'snow', 'whitesmoke', 'lime', 'lightskyblue','khaki', 'mediumaquamarine']  
+
+
+# def covert_to_table_image(table):
+
+#     df = pd.DataFrame(table)
+    
+#     styled_df = (
+#         df.style
+#         .hide(axis="index")
+#         .hide(axis="columns")
+#         .set_table_styles([
+#             {'selector': 'tbody tr:nth-child(n+2)', 'props': [('background-color', random.choice(BACKGROUND_COLORS))]},
+#             {'selector': 'tbody tr:nth-child(1)', 'props': [('background-color', random.choice(HEADER_COLORS))]},
+#             {'selector': 'table', 'props': [
+#                 ('border', '1px solid white'),
+#             ]},
+#             {'selector': 'td', 'props': [
+#                 ('min-width', '150px'), 
+#                 ('max-width', '450px'),
+#                 ('padding', '15px'),
+#             ]}
+#         ])
+#         .set_properties(**{
+#             'text-align': 'center',
+#             'font-size': '12px',
+#         })
+#     )
+
+#     # dfi.export(styled_df,f"finqa_translated_images/1.jpeg")
+
+#     # with open(f'finqa_translated_images/1.jpeg', "rb") as image_file:
+#     #     print(image_file.read())
+#     #     encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
+
+#     with io.BytesIO() as buffer:
+#         dfi.export(styled_df, buffer)
+#         buffer.seek(0)  
+#         encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+#         # image = Image.open(buffer)
+#         # with io.BytesIO() as jpeg_buffer:
+#         #     image.convert("RGB").save(jpeg_buffer, format="JPEG")
+#         #     jpeg_buffer.seek(0)
+
+#         #     encoded_image = base64.b64encode(jpeg_buffer.getvalue()).decode("utf-8")
+    
+#     return f"data:image/jpeg;base64,{encoded_image}"
 
 
 
