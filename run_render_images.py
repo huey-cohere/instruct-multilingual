@@ -15,10 +15,39 @@ os.makedirs(OUTPUT_BASE, exist_ok=True)
 
 os.makedirs("logs/", exist_ok=True)
 
+language_list =[
+    "arb_Arab",
+    "zho_Hans",
+    "zho_Hant",
+    "ces_Latn",
+    "nld_Latn",
+    "fra_Latn",
+    "deu_Latn",
+    "ell_Grek",
+    "heb_Hebr",
+    "hin_Deva",
+    "ind_Latn",
+    # "ita_Latn",
+    # "jpn_Jpan",
+    # "kor_Hang",
+    # "pes_Arab",
+    # "pol_Latn",
+    # "por_Latn",
+    # "ron_Latn",
+    # "rus_Cyrl",
+    # "spa_Latn",
+    # "tur_Latn",
+    # "ukr_Cyrl",
+    # "vie_Latn",
+]
+
 
 def main():
     processes = []
     for language in os.listdir(FOLDER):
+
+        if language not in language_list:
+            continue
 
         print(f"Language: {language}")
         os.makedirs(f"{OUTPUT_BASE}/{language}", exist_ok=True)
