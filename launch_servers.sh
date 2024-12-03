@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Total number of GPUs
-TOTAL_GPUS=16
+TOTAL_GPUS=8
 
 # Number of servers per GPU
-SERVERS_PER_GPU=4
+SERVERS_PER_GPU=9
 
 # Starting port number
 BASE_PORT=8000
