@@ -4,7 +4,7 @@
 TOTAL_GPUS=8
 
 # Number of servers per GPU
-SERVERS_PER_GPU=9
+SERVERS_PER_GPU=8
 
 # Starting port number
 BASE_PORT=8000
