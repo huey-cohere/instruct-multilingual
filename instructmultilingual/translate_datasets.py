@@ -67,6 +67,23 @@ def inference_request(url: str, source_language: str, target_language: str, text
     response = requests.post(url, headers=headers, json=data)
     return response.json()["translated_texts"]
 
+def mock_inference_request(url: str, source_language: str, target_language: str, texts: List[str]) -> List[str]:
+    """A mock function to simulate an inference request for translation.
+
+    Args:
+        url (str): The URL of the inference API server (not used in mock)
+        source_language (str): Language code for the source language
+        target_language (str): Language code for the target language
+        texts (List[str]): List of texts to be translated
+
+    Returns:
+        List[str]: List of translated text (lorem ipsum)
+    """
+    lorem_ipsum = (
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    )
+    return [lorem_ipsum for _ in texts]
 
 def call_inference_api(
     example: Dict[str, List[str]],
@@ -91,7 +108,7 @@ def call_inference_api(
     for key in keys_to_be_translated:
         # NLLB model seems to ignore some sentences right before newline characters
         batch_str = [sen.replace('\n', '') for sen in example[key]]
-        example[key] = inference_request(url, source_lang_code, target_lang_code, batch_str)
+        example[key] = mock_inference_request(url, source_lang_code, target_lang_code, batch_str)
     return example
 
 
@@ -129,8 +146,7 @@ def translate_sent_by_sent(
 
     for i in range(num_inputs):
 
-        for k in example.keys():
-
+        for k in keys_to_be_translated:
             sentences = split_text_into_sentences(text=example[k][i], language='en')
             sentenized_example[k].extend(sentences)
             sentenized_example[f"{k}_pos"].append(sentenized_example[f"{k}_pos"][-1] + len(sentences))
@@ -177,7 +193,7 @@ def translate_dataset_split_via_inference_api(
     """
     start_time = time.time()
     ds = dataset[split]
-    print(f"[{split}] {len(ds)=}")
+    # print(f"[{split}] {len(ds)=}")
     ds = ds.map(
         lambda x: translate_sent_by_sent(
             x,

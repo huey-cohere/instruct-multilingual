@@ -68,9 +68,9 @@ def process_language(language, sampled_examples):
     Process a single language by splitting its dataset into chunks and assigning them to servers.
     """
     # We want to process each dataset across all the servers
-    chunks = np.array_split(sampled_examples, len(SERVERS))
+    chunks = [c.tolist() for c in np.array_split(sampled_examples, len(SERVERS))]
     futures = []
-    translation_datasets = []
+    translated_data = []
 
     # Submit tasks for all servers
     with ThreadPoolExecutor(max_workers=len(SERVERS)) as executor:
@@ -79,14 +79,13 @@ def process_language(language, sampled_examples):
 
         # Collect results as chunks are completed
         for future in as_completed(futures):
-            try:
-                translation_datasets.extend(future.result())
-            except Exception as e:
-                print(f"Error processing chunk for language {language}: {e}")
+            # try:
+            translated_data.extend(future.result())
+            # except Exception as e:
+            #     print(f"Error processing chunk for language {language}: {e}")
 
-    combined_samples = concatenate_datasets([td["samples"] for td in translation_datasets])
-    print(f"Finished processing {language}. Total examples processed: {len(combined_samples)}")
-    return combined_samples
+    print(f"Finished processing {language}. Total examples processed: {len(translated_data)}")
+    return translated_data
 
 
 def generate_synthetic_data(source_path, output_dir):
