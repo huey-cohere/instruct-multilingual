@@ -108,7 +108,7 @@ def call_inference_api(
     for key in keys_to_be_translated:
         # NLLB model seems to ignore some sentences right before newline characters
         batch_str = [sen.replace('\n', '') for sen in example[key]]
-        example[key] = mock_inference_request(url, source_lang_code, target_lang_code, batch_str)
+        example[key] = inference_request(url, source_lang_code, target_lang_code, batch_str)
     return example
 
 
