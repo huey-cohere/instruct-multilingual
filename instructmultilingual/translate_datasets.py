@@ -154,6 +154,46 @@ def translate_sent_by_sent(
         example[k] = merged_texts
     return example
 
+def translate_dataset_split_via_inference_api(
+    dataset: DatasetDict,
+    split: str,
+    translate_keys: List[str],
+    target_language_code: str,
+    source_language_code: str = "eng_Latn",
+    url: str = "http://localhost:8000/translate",
+    num_proc: int = 1,
+) -> None:
+    """This function takes an DatasetDict object and translates it via the
+    translation inference server API. The function then returns the result
+
+    Args:
+        dataset (DatasetDict): A DatasetDict object of the original text dataset. Needs to have at least one split.
+        split (str): Split name in the dataset you want translated.
+        translate_keys (List[str]): The keys/columns for the texts you want translated.
+        target_language_code (str): the language code you want translation to.
+        source_language_code (str, optional): Languague of the original text. Defaults to "eng_Latn".
+        url (str, optional): The URL of the inference API server. Defaults to "http://localhost:8000/translate".
+        num_proc (int, optional): Number of processes to use for processing the dataset. Defaults to 1.
+    """
+    start_time = time.time()
+    ds = dataset[split]
+    print(f"[{split}] {len(ds)=}")
+    ds = ds.map(
+        lambda x: translate_sent_by_sent(
+            x,
+            url=url,
+            source_lang_code=source_language_code,
+            target_lang_code=target_language_code,
+            keys_to_be_translated=translate_keys,
+        ),
+        batched=True,
+        num_proc=num_proc,
+    )
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    # print(f"Elapsed time: {elapsed_time:.4f} seconds")
+    return ds
 
 def translate_dataset_via_inference_api(
     dataset: DatasetDict,
