@@ -12,8 +12,29 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 ##################################
 
 NUM_GENERATIONS_BY_LANGUAGE = {
-    "fra_Latn": 1024,
-    "zho_Hant": 1024,
+    "pes_Arab": 10000,
+    "jpn_Jpan": 10000,
+    "vie_Latn": 10000,
+    "ron_Latn": 10000,
+    "ind_Latn": 10000,
+    "tur_Latn": 10000,
+    "spa_Latn": 10000,
+    "ces_Latn": 10000,
+    "pol_Latn": 10000,
+    "por_Latn": 10000,
+    "nld_Latn": 10000,
+    "kor_Hang": 10000,
+    "fra_Latn": 10000,
+    "ukr_Cyrl": 10000,
+    "hin_Deva": 10000,
+    "heb_Hebr": 10000,
+    "ell_Grek": 10000,
+    "ita_Latn": 10000,
+    "zho_Hans": 10000,
+    "rus_Cyrl": 10000,
+    "arb_Arab": 10000,
+    "zho_Hant": 10000,
+    "deu_Latn": 10000
 }
 
 SERVERS = [f"http://localhost:{8000 + i}/translate" for i in range(64)]  # 64 servers
