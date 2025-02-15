@@ -100,7 +100,11 @@ def generate_synthetic_data(source_prompts_path, output_dir, columns_to_translat
         List[str]: List of translated text
     """
     with open(source_prompts_path, "r", encoding="utf-8") as f:
-        english_example_pool = [json.loads(line) for line in f]
+        english_example_pool = []
+        for line in f:
+            example = json.loads(line)
+            example['source_prompt'] = example['prompt']
+            english_example_pool.append(example)
 
     for language, num_examples in NUM_GENERATIONS_BY_LANGUAGE.items():
         sampled_examples = [random.choice(english_example_pool) for _ in range(num_examples)]
