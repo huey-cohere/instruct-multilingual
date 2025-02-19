@@ -19,8 +19,8 @@ python3 synthetic-generations.py "./$PROMPT_FILE" "./$OUTPUT_FOLDER"
 echo "Uploading results to google storage..."
 gsutil cp -r "./$OUTPUT_FOLDER" "$(dirname $GS_PROMPT_PATH)/"
 
-echo "Cleaning up local files..."
-rm $PROMPT_FILE
-rm -r $OUTPUT_FOLDER
+# echo "Cleaning up local files..."
+# rm $PROMPT_FILE
+# rm -r $OUTPUT_FOLDER
 
 echo "Job Complete"
