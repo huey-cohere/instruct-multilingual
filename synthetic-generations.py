@@ -12,29 +12,29 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 ##################################
 
 NUM_GENERATIONS_BY_LANGUAGE = {
-    "pes_Arab": 10000,
-    "jpn_Jpan": 10000,
-    "vie_Latn": 10000,
-    "ron_Latn": 10000,
-    "ind_Latn": 10000,
-    "tur_Latn": 10000,
-    "spa_Latn": 10000,
-    "ces_Latn": 10000,
-    "pol_Latn": 10000,
-    "por_Latn": 10000,
-    "nld_Latn": 10000,
-    "kor_Hang": 10000,
-    "fra_Latn": 10000,
-    "ukr_Cyrl": 10000,
-    "hin_Deva": 10000,
-    "heb_Hebr": 10000,
-    "ell_Grek": 10000,
-    "ita_Latn": 10000,
-    "zho_Hans": 10000,
-    "rus_Cyrl": 10000,
-    "arb_Arab": 10000,
-    "zho_Hant": 10000,
-    "deu_Latn": 10000
+    "pes_Arab": 30000,
+    "jpn_Jpan": 30000,
+    "vie_Latn": 30000,
+    "ron_Latn": 30000,
+    "ind_Latn": 30000,
+    "tur_Latn": 30000,
+    "spa_Latn": 30000,
+    "ces_Latn": 30000,
+    "pol_Latn": 30000,
+    "por_Latn": 30000,
+    "nld_Latn": 30000,
+    "kor_Hang": 30000,
+    "fra_Latn": 30000,
+    "ukr_Cyrl": 30000,
+    "hin_Deva": 30000,
+    "heb_Hebr": 30000,
+    "ell_Grek": 30000,
+    "ita_Latn": 30000,
+    "zho_Hans": 30000,
+    "rus_Cyrl": 30000,
+    "arb_Arab": 30000,
+    "zho_Hant": 30000,
+    "deu_Latn": 30000
 }
 
 SERVERS = [f"http://localhost:{8000 + i}/translate" for i in range(64)]  # 64 servers
@@ -108,17 +108,27 @@ def generate_synthetic_data(source_prompts_path, output_dir, columns_to_translat
 
     for language, num_examples in NUM_GENERATIONS_BY_LANGUAGE.items():
         sampled_examples = [random.choice(english_example_pool) for _ in range(num_examples)]
+        sample_chunks = [sampled_examples[i:i + 10000] for i in range(0, len(sampled_examples), 10000)]
 
-        print(f'Currently synthesizing {language} data.')
-        translation_results = process_language(language, sampled_examples, columns_to_translate)
-
+        print(f"Currently synthesizing {language} data.")
+        chunk_index = 1
         Path(output_dir).mkdir(parents=True, exist_ok=True)
-        output_path = f"{output_dir}/{language}_translations.jsonl"
-        with open(output_path, "w", encoding="utf-8") as f:
-            for example in translation_results:
-                f.write(json.dumps(example, ensure_ascii=False) + "\n")
 
-        print(f"Saved final results for {language} to {output_path}\n\n")
+        for chunk in sample_chunks:
+            # Process the current chunk
+            print(f"Processing chunk {chunk_index} for {language}...")
+            translation_results = process_language(language, chunk, columns_to_translate)
+
+            # Generate output file path with chunk index
+            output_path = f"{output_dir}/{language}_translations_{chunk_index}.jsonl"
+            with open(output_path, "w", encoding="utf-8") as f:
+                for example in translation_results:
+                    f.write(json.dumps(example, ensure_ascii=False) + "\n")
+
+            print(f"Saved results for {language}, chunk {chunk_index} to {output_path}")
+            chunk_index += 1
+
+        print(f"Completed synthesis for {language}.\n\n")
 
 if __name__ == "__main__":
     fire.Fire(generate_synthetic_data)
